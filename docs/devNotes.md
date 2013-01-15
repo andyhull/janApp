@@ -2,9 +2,9 @@ App notes:
 ---------
 * need to connect phone numbers together 
 
-		* has to be sort of random
-		* need a flag to indicate which are linked
-		* need to be able to log connections
+		1. has to be sort of random
+		1. need a flag to indicate which are linked
+		1. need to be able to log connections
 
 Questions
 ---------
