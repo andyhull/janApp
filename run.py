@@ -3,7 +3,7 @@ import twilio.twiml, os
  
 app = Flask(__name__)
  
-# Try adding your own number to this list!
+# Need a DB call to numbers and names
 callers = {
     "+19196361635": "Andy",
     "+14158675310": "Boots",
