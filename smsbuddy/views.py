@@ -23,11 +23,12 @@ def index():
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    db_session.execute('insert into entries (title, text) values (?, ?)',
-                 [request.form['title'], request.form['text']])
+    db_session.add(Numbers(request.form['phone'], request.form['text']))
+    # db_session.execute('insert into entries (title, text) values (?, ?)',
+    #              [request.form['title'], request.form['text']])
     db_session.commit()
     flash('New entry was successfully posted')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
