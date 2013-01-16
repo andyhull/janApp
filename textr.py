@@ -1,9 +1,12 @@
 # all the imports
 from __future__ import with_statement
 from contextlib import closing
+from flask_heroku import Heroku
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
+
+heroku = Heroku(app)
 
 # configuration
 DATABASE = '/tmp/flaskr.db'
@@ -11,6 +14,7 @@ DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'default'
+
 
 # create our little application :)
 app = Flask(__name__)
