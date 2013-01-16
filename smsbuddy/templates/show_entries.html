@@ -13,7 +13,7 @@
   {% endif %}
   <ul class=entries>
   {% for entry in entries %}
-    <li>{{ entry.phone }}<br/>{{ entry.buddy }}
+    <li><strong>Phone #:</strong>{{ entry.phone }}&nbsp;<strong>Buddy</strong>{{ entry.buddy }}
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
