@@ -1,5 +1,9 @@
-from database import db_session
+# from database import db_session
 from smsbuddy import app
+from database import engine, db_session
+from flask import Flask, request, session, g, redirect, url_for, \
+     abort, render_template, flash
+from flask.ext.sqlalchemy import SQLAlchemy
 
 @app.teardown_request
 def shutdown_session(exception=None):
@@ -7,21 +11,19 @@ def shutdown_session(exception=None):
 
 @app.route('/')
 def index():
-    return 'Hello World!'
-
-# @app.route('/')
-# def show_entries():
-#     cur = engine.execute('select phone, buddy from numbers order by id desc')
-#     entries = [dict(phone=row[0], buddy=row[1]) for row in cur.fetchall()]
-#     return render_template('show_entries.html', entries=none)
+    cur = db_session.execute('select phone, buddy from numbers order by id desc')
+    entries = [dict(phone=row[0], buddy=row[1]) for row in cur.fetchall()]
+    # return entries[0]
+    # flash(entries)
+    return render_template('show_entries.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    engine.execute('insert into entries (title, text) values (?, ?)',
+    db_session.execute('insert into entries (title, text) values (?, ?)',
                  [request.form['title'], request.form['text']])
-    engine.commit()
+    db_session.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
 
