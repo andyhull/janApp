@@ -1,38 +1,22 @@
 # all the imports
 from __future__ import with_statement
 from contextlib import closing
-from flask_heroku import Heroku
-import sqlite3
+import os
+from flask.ext.sqlalchemy import SQLAlchemy
+from database import db_session
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
-
-heroku = Heroku(app)
-
-# configuration
-DATABASE = '/tmp/flaskr.db'
-DEBUG = True
-SECRET_KEY = 'development key'
-USERNAME = 'admin'
-PASSWORD = 'default'
-
 
 # create our little application :)
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
-def connect_db():
-    return sqlite3.connect(app.config['DATABASE'])
 
-def init_db():
-    with closing(connect_db()) as db:
-        with app.open_resource('schema.sql') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
 
-@app.before_request
-def before_request():
-    g.db = connect_db()
+@app.teardown_request
+def shutdown_session(exception=None):
+    db_session.remove()
 
 @app.route('/')
 def show_entries():
@@ -69,10 +53,6 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries'))
-
-@app.teardown_request
-def teardown_request(exception):
-    g.db.close()
 
 if __name__ == '__main__':
     app.run()
