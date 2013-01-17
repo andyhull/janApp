@@ -14,18 +14,14 @@ def shutdown_session(exception=None):
 def index():
     cur = db_session.execute('select phone, buddy from numbers order by id desc')
     cur = Numbers.query.all()
-    # entries = [dict(phone=row[0], buddy=row[1]) for row in cur.fetchall()]
-    # return entries[0]
-    # flash(entries)
+
     return render_template('show_entries.html', entries=cur)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    db_session.add(Numbers(request.form['phone'], request.form['text']))
-    # db_session.execute('insert into entries (title, text) values (?, ?)',
-    #              [request.form['title'], request.form['text']])
+    db_session.add(Numbers(request.form['phone']))
     db_session.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('index'))
