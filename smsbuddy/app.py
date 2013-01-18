@@ -1,15 +1,10 @@
 import os
-from flask import Flask
-# from database import db_session, init_db
-import views
 from database import engine, db_session, init_db
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from models import Numbers
 
 app = Flask(__name__)
-
-# from database import db_session
 
 @app.teardown_request
 def shutdown_session(exception=None):
@@ -44,3 +39,4 @@ if __name__ == '__main__':
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(os.environ.get('PORT', 5000))
 	app.run(host='0.0.0.0', port=port)
+
