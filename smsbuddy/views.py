@@ -1,8 +1,7 @@
 # from database import db_session
 import app
 from database import engine, db_session
-from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from models import Numbers
 
