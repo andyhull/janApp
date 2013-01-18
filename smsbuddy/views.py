@@ -1,5 +1,5 @@
 # from database import db_session
-from smsbuddy import app
+import app
 from database import engine, db_session
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
