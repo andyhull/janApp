@@ -1,1 +1,1 @@
-web: python smsbuddy/__init__.py
+web: python smsbuddy/app.py
