@@ -1,5 +1,5 @@
 # from database import db_session
-import app
+from app2 import app
 from database import engine, db_session
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -32,4 +32,8 @@ def add_entry():
 
     flash('New entry was successfully posted')
     return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    init_db()
+    app.run()
 
