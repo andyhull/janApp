@@ -12,7 +12,6 @@ app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 init_db()
 from smsbuddy import views
 
-
 if __name__ == "__main__":
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
