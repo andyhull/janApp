@@ -1,1 +1,1 @@
-web: python runserver.py
+web: python smsbuddy/run.py
