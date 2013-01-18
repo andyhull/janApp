@@ -19,19 +19,17 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add_entry():
-    if not session.get('logged_in'):
-        abort(401)
     newPhone = request.form['phone']
     db_session.add(Numbers(newPhone))
     db_session.commit()
-    # Find the first phone number that does not have a buddy
+    # Find the numbers that do not have a buddy
     newBud = db_session.query(Numbers).filter(Numbers.buddy==None, Numbers.phone != newPhone).first()
-    phoneCheck = db_session.query(Numbers).filter(Numbers.buddy==newBud.phone)
-    # Add that phone number to the newly entered phone number
-    # if newBud.:
-    #     pass
-    db_session.query(Numbers).filter(Numbers.phone==newPhone).update({Numbers.buddy: newBud.phone})
-    db_session.commit()
+    if newBud:
+        # Add the buddy number to the newly added phone number
+        db_session.query(Numbers).filter(Numbers.phone==newPhone).update({Numbers.buddy: newBud.phone})
+        # Add the number to the buddy list 
+        db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
+        db_session.commit()
 
     flash('New entry was successfully posted')
     return redirect(url_for('index'))
