@@ -18,6 +18,12 @@ app.config.from_object(__name__)
 def shutdown_session(exception=None):
     db_session.remove()
 
+@app.route('/')
+def index():
+    cur = db_session.execute('select phone, buddy from numbers order by id desc')
+    cur = Numbers.query.all()
+    return render_template('show_entries.html', entries=cur)
+
 @app.route('/add', methods=['POST'])
 def add_entry():
     newPhone = request.form['phone']
@@ -34,13 +40,6 @@ def add_entry():
 
     flash('New entry was successfully posted')
     return redirect(url_for('index'))
-@app.route('/')
-def index():
-    cur = db_session.execute('select phone, buddy from numbers order by id desc')
-    cur = Numbers.query.all()
-
-    return render_template('show_entries.html', entries=cur)
-
 
 if __name__ == '__main__':
 	# Bind to PORT if defined, otherwise default to 5000.
