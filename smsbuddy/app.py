@@ -14,6 +14,11 @@ from config import account_sid, auth_token, twilio_number
 DEBUG = True
 SECRET_KEY = 'development key'
 
+#DB replacement for testing Twilio
+loner = None
+numbers = []
+convos = {}
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 
