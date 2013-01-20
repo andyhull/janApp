@@ -7,6 +7,9 @@ from models import Numbers
 # import logging, sys
 # logging.basicConfig(stream=sys.stderr)
 # import views
+import twilio.twiml
+from twilio.rest import TwilioRestClient
+from config import account_sid, auth_token, twilio_number
 
 DEBUG = True
 SECRET_KEY = 'development key'
