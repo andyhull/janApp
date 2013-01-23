@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, "/smsbuddy")
 from smsbuddy import app
 from database import init_db
 import os
