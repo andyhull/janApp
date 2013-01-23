@@ -2,10 +2,10 @@ import os
 import twilio.twiml
 from database import engine, db_session, init_db
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from models import Numbers
 from twilio.rest import TwilioRestClient
-from config import account_sid, auth_token, twilio_number
+# from config import account_sid, auth_token, twilio_number
 
 app = Flask(__name__)
 
@@ -82,13 +82,13 @@ def get_partner(number):
     return None
 
 def send_sms(number, body):
-    client = TwilioRestClient(account_sid, auth_token)
+    client = TwilioRestClient(os.env[ACCOUNT_SID], os.env[AUTH_TOKEN])
     message = client.sms.messages.create(to=number, from_=twilio_number,
                                      body=body)
 
 if __name__ == '__main__':
-	init_db()
-	# Bind to PORT if defined, otherwise default to 5000.
-	port = int(os.environ.get('PORT', 5000))
-	app.run(host='0.0.0.0', port=port, debug=True)
+    init_db()
+    # Bind to PORT if defined, otherwise default to 5000.
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
 
