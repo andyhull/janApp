@@ -1,11 +1,11 @@
 import os
-import twilio.twiml
+# import twilio.twiml
 from database import engine, db_session, init_db
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from models import Numbers
 from twilio.rest import TwilioRestClient
-from config import account_sid, auth_token, twilio_number
+# from config import account_sid, auth_token, twilio_number
 
 app = Flask(__name__)
 
