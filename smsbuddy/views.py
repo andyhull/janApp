@@ -8,6 +8,10 @@ from models import Numbers
 def shutdown_session(exception=None):
     db_session.remove()
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
 @app.route('/')
 def index():
     cur = db_session.execute('select phone, buddy from numbers order by id desc')
@@ -79,3 +83,7 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port)
     init_db()
 
+<<<<<<< HEAD
+=======
+>>>>>>> 3176439ea6aafa0e06fbd13da3f74f83bc385f52
+>>>>>>> master
