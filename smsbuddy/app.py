@@ -6,8 +6,12 @@ from flask_sqlalchemy import SQLAlchemy
 from models import Numbers
 from twilio.rest import TwilioRestClient
 # from config import account_sid, auth_token, twilio_number
+DEBUG = True
+SECRET_KEY = 'development key'
 
 app = Flask(__name__)
+app.config.from_object(__name__)
+app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 #DB replacement for testing Twilio
 loner = None
@@ -26,8 +30,8 @@ def index():
     return render_template('show_entries.html', entries=cur)
 
 @app.route('/add', methods=['POST'])
-def add_entry():
-    newPhone = request.form['phone']
+def add_entry(newNumber=request.form['phone']):
+    newPhone = newNumber
     db_session.add(Numbers(newPhone))
     db_session.commit()
     # Find the numbers that do not have a buddy
@@ -50,11 +54,17 @@ def receiver():
     app.logger.debug('From: %s, Body: %s' % (from_number, body))
 
     #initiate new number
-    if from_number not in numbers:
+    #replace this with a check from the database
+    existingNumbers = db_session.query(Numbers).filter(Numbers.phone==from_number).first()
+    if not existingNumbers:
         initiate_number(from_number)
         return 'Text me: 415.539.3977'
+    # if from_number not in numbers:
+    #     initiate_number(from_number)
+    #     return 'Text me: 415.539.3977'
 
     partner = get_partner(from_number)
+    #here we can match to the DB
     if partner:
         send_sms(partner, body)
     else:
@@ -63,23 +73,35 @@ def receiver():
     return 'Text me: 510-213-6505'
 
 def initiate_number(number):
-    global loner
-    numbers.append(number)
-    if not loner:
-        loner = number
+    add_entry(number)
+    if db_session.query(Numbers).filter(Numbers.phone==number, Numbers.buddy==None):
         send_sms(number, "There aren't any people to match you with quite yet.")
     else:
-        convos[number] = loner
-        convos[loner] = number
         body = "You've been matched. Feel free to share your experience."
         send_sms(number, body)
         send_sms(loner, body)
-        loner = None
+    # global loner
+    # numbers.append(number)
+    # if not loner:
+    #     loner = number
+    #     send_sms(number, "There aren't any people to match you with quite yet.")
+    # else:
+    #     convos[number] = loner
+    #     convos[loner] = number
+    #     body = "You've been matched. Feel free to share your experience."
+    #     send_sms(number, body)
+    #     send_sms(loner, body)
+    #     loner = None
 
 def get_partner(number):
-    if number in convos:
-        return convos[number]
-    return None
+    numberBuddy = db_session.query(Numbers).filter(Numbers.phone==number).first()
+    if numberBuddy:
+        return numberBuddy.buddy
+    else:
+        return None
+    # if number in convos:
+    #     return convos[number]
+    # return None
 
 def send_sms(number, body):
     client = TwilioRestClient(os.env[ACCOUNT_SID], os.env[AUTH_TOKEN])
