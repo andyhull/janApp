@@ -10,9 +10,11 @@
  *
  **/
 
+@sitewidth: 750;
+
 
  #container {
- 	max-width: 750px;
+ 	max-width: @sitewidth;
  	padding: 5px;
  	margin: 0 auto;
  	display: block;
@@ -23,6 +25,9 @@
  }
 
  #topnav {
+ 	margin: 0;
+ 	padding: 5px 0 0 10px;
+ 	border: 1px red;
 
  }
 
@@ -41,16 +46,23 @@
  }
 
  #copyblock {
-
+ 	max-width: percentage(0.5);
 
  }
 
- /**
-  *
-  * Styling
-  *
-  **/
+/**
+ *
+ * Styling Utils
+ *
+ **/
 
+
+
+/**
+ *
+ * Parts
+ *
+ **/
  #topbar {
 
  	ul { //styling
@@ -59,3 +71,7 @@
  	}
  	}
  }
+
+ #site-logo
+
+ #menubar
