@@ -1,5 +1,6 @@
 import os
 import twilio.twiml
+from util import cleanphone
 from database import engine, db_session, init_db
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -29,8 +30,36 @@ def index():
 
     return render_template('show_entries.html', entries=cur)
 
+# use this for website number entry
 @app.route('/add', methods=['POST'])
-def add_entry(newNumber=request.form['phone']):
+def add_entry():
+    # clean the entered phone number
+    newPhone = cleanphone(request.form['phone'])
+    # did we get a valid number?????
+    if newPhone != '-1':
+        db_session.add(Numbers(newPhone))
+        db_session.commit()
+        # Find the numbers that do not have a buddy
+        newBud = db_session.query(Numbers).filter(Numbers.buddy==None, Numbers.phone != newPhone).first()
+        if newBud:
+            # Add the buddy number to the newly added phone number
+            db_session.query(Numbers).filter(Numbers.phone==newPhone).update({Numbers.buddy: newBud.phone})
+            # Add the number to the buddy list 
+            db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
+            db_session.commit()
+
+        flash('New entry was successfully posted')
+        return redirect(url_for('index'))
+    else:
+        flash('Sorry that is not a valid number')
+        return redirect(url_for('index'))
+
+# use this function for text entry
+def add_entry_text(newNumber):
+    if newNumber:
+        newPhone = newNumber
+    else:
+        newPhone = request.form['phone']
     newPhone = newNumber
     db_session.add(Numbers(newPhone))
     db_session.commit()
@@ -42,9 +71,6 @@ def add_entry(newNumber=request.form['phone']):
         # Add the number to the buddy list 
         db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
         db_session.commit()
-
-    flash('New entry was successfully posted')
-    return redirect(url_for('index'))
 
 
 @app.route('/receiver', methods=['GET', 'POST'])
@@ -73,7 +99,8 @@ def receiver():
     return 'Text me: 510-213-6505'
 
 def initiate_number(number):
-    add_entry(number)
+    # if this is from a text add the number to the database
+    add_entry_text(number)
     if db_session.query(Numbers).filter(Numbers.phone==number, Numbers.buddy==None):
         send_sms(number, "There aren't any people to match you with quite yet.")
     else:
