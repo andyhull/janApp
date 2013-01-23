@@ -82,7 +82,7 @@ def get_partner(number):
     return None
 
 def send_sms(number, body):
-    client = TwilioRestClient(account_sid, auth_token)
+    client = TwilioRestClient(os.env[ACCOUNT_SID], os.env[AUTH_TOKEN])
     message = client.sms.messages.create(to=number, from_=twilio_number,
                                      body=body)
 
