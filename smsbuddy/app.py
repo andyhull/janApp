@@ -35,6 +35,7 @@ def index():
 def add_entry():
     # clean the entered phone number
     newPhone = cleanphone(request.form['phone'])
+    # newPhone = request.form['phone']
     # did we get a valid number?????
     if newPhone != '-1':
         db_session.add(Numbers(newPhone))
@@ -59,8 +60,7 @@ def add_entry_text(newNumber):
     if newNumber:
         newPhone = newNumber
     else:
-        newPhone = request.form['phone']
-    newPhone = newNumber
+        newPhone = cleanphone(request.form['phone'])
     db_session.add(Numbers(newPhone))
     db_session.commit()
     # Find the numbers that do not have a buddy
@@ -71,6 +71,7 @@ def add_entry_text(newNumber):
         # Add the number to the buddy list 
         db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
         db_session.commit()
+    return newPhone, newBud
 
 
 @app.route('/receiver', methods=['GET', 'POST'])
@@ -84,7 +85,7 @@ def receiver():
     existingNumbers = db_session.query(Numbers).filter(Numbers.phone==from_number).first()
     if not existingNumbers:
         initiate_number(from_number)
-        return 'Text me: 415.539.3977'
+        return 'Text me: 415.697.3084'
     # if from_number not in numbers:
     #     initiate_number(from_number)
     #     return 'Text me: 415.539.3977'
@@ -100,13 +101,14 @@ def receiver():
 
 def initiate_number(number):
     # if this is from a text add the number to the database
-    add_entry_text(number)
+    startingNumber = add_entry_text(number)
     if db_session.query(Numbers).filter(Numbers.phone==number, Numbers.buddy==None):
         send_sms(number, "There aren't any people to match you with quite yet.")
     else:
         body = "You've been matched. Feel free to share your experience."
-        send_sms(number, body)
-        send_sms(loner, body)
+        print(startingNumber)
+        send_sms(startingNumber[0], body)
+        send_sms(startingNumber[1], body)
     # global loner
     # numbers.append(number)
     # if not loner:
@@ -131,9 +133,12 @@ def get_partner(number):
     # return None
 
 def send_sms(number, body):
-    client = TwilioRestClient(os.env[ACCOUNT_SID], os.env[AUTH_TOKEN])
+    twilio_number = '+14156973084'
+    client = TwilioRestClient(os.environ['ACCOUNT_SID'], os.environ['AUTH_TOKEN'])
     message = client.sms.messages.create(to=number, from_=twilio_number,
                                      body=body)
+# def clearDb():
+#     Base.metadata.drop_all(bind=engine)
 
 if __name__ == '__main__':
     init_db()
