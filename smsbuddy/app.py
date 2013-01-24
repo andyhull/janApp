@@ -36,7 +36,6 @@ def index():
 def add_entry():
     # clean the entered phone number
     newPhone = cleanphone(request.form['phone'])
-    # newPhone = request.form['phone']
     # did we get a valid number?????
     if newPhone != '-1':
         db_session.add(Numbers(newPhone))
@@ -62,7 +61,7 @@ def add_entry():
         flash('Sorry that is not a valid number')
         return redirect(url_for('index'))
 
-# use this function for text entry
+# use this function for sms/text entry
 def add_entry_text(newNumber):
     if newNumber:
         newPhone = newNumber
@@ -84,8 +83,6 @@ def add_entry_text(newNumber):
     else:
         body = "Thanks for signing up! We're still waiting to match you. Sorry about that!"
         send_sms(newPhone, body)
-    # return newPhone, newBud
-
 
 @app.route('/receiver', methods=['GET', 'POST'])
 def receiver():
@@ -99,43 +96,19 @@ def receiver():
     if not existingNumbers:
         initiate_number(from_number)
         return 'Text me: 415.697.3084'
-    # if from_number not in numbers:
-    #     initiate_number(from_number)
-    #     return 'Text me: 415.539.3977'
 
     partner = get_partner(from_number)
     #here we can match to the DB
     if partner:
         send_sms(partner, body)
     else:
-        send_sms(from_number, "We're still waiting to match you. Sorry about that!")
+        send_sms(from_number, "Thanks for signing up! We're still waiting to match you. Sorry about that!")
     app.logger.debug('From: %s \nPartner: %s \nloner: %s \n convos: %s' % (from_number, partner, loner, convos))
     return 'Text me: 510-213-6505'
 
 def initiate_number(number):
     # if this is from a text add the number to the database
     startingNumber = add_entry_text(number)
-    # if db_session.query(Numbers).filter(Numbers.phone==number, Numbers.buddy==None):
-    #     # send_sms(number, "There aren't any people to match you with quite yet.")
-    #     send_sms(number, "There aren't any people to match you with quite yet.")
-    # else:
-    #     body = "You've been matched. Feel free to share your experience."
-    #     print(startingNumber)
-    #     app.logger.debug('From: %s \nPartner: %s' % (startingNumber[0], startingNumber[1]))
-    #     send_sms(startingNumber[0], body)
-    #     send_sms(startingNumber[1], body)
-    # global loner
-    # numbers.append(number)
-    # if not loner:
-    #     loner = number
-    #     send_sms(number, "There aren't any people to match you with quite yet.")
-    # else:
-    #     convos[number] = loner
-    #     convos[loner] = number
-    #     body = "You've been matched. Feel free to share your experience."
-    #     send_sms(number, body)
-    #     send_sms(loner, body)
-    #     loner = None
 
 def get_partner(number):
     numberBuddy = db_session.query(Numbers).filter(Numbers.phone==number).first()
@@ -143,17 +116,12 @@ def get_partner(number):
         return numberBuddy.buddy
     else:
         return None
-    # if number in convos:
-    #     return convos[number]
-    # return None
 
 def send_sms(number, body):
     twilio_number = '+14156973084'
     client = TwilioRestClient(os.environ['ACCOUNT_SID'], os.environ['AUTH_TOKEN'])
     message = client.sms.messages.create(to=number, from_=twilio_number,
                                      body=body)
-# def clearDb():
-#     Base.metadata.drop_all(bind=engine)
 
 if __name__ == '__main__':
     init_db()
