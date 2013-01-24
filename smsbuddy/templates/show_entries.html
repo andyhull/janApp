@@ -9,8 +9,6 @@
   <ul class=entries>
   {% for entry in entries %}
     <li><strong>Phone #:&nbsp;</strong>{{ entry.phone }}&nbsp;<strong>Buddy:&nbsp;</strong>{{ entry.buddy }}
-  {% else %}
-    <li><em>Unbelievable. No entries here so far</em>
   {% endfor %}
   </ul>
 {% endblock %}
