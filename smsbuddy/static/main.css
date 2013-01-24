@@ -1,8 +1,3 @@
-/**
- *
- * Layout
- *
- **/
 .container {
   max-width: 750px;
   padding: 5px;
@@ -11,8 +6,12 @@
 }
 .topnav {
   margin: 0;
+  padding: 0;
+  border-color: red;
+  border-width: 1px;
+}
+.topbar {
   padding: 5px 0 0 10px;
-  border: 1px red;
 }
 .join {
   height: 200px;
@@ -21,13 +20,6 @@
 .copyblock {
   max-width: 50%;
 }
-/**
- *
- * Styling Utils
- *
- **/
-/**
- *
- * Parts
- *
- **/
+.content {
+  background: #99e1ff;
+}
