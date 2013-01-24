@@ -3,22 +3,22 @@
  * Layout
  *
  **/
-#container {
+.container {
   max-width: 750px;
   padding: 5px;
   margin: 0 auto;
   display: block;
 }
-#topnav {
+.topnav {
   margin: 0;
   padding: 5px 0 0 10px;
   border: 1px red;
 }
-#join {
+.join {
   height: 200px;
   width: 500px;
 }
-#copyblock {
+.copyblock {
   max-width: 50%;
 }
 /**
