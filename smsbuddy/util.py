@@ -6,9 +6,9 @@ def cleanphone(phonenumber):
 	# removing all but the numbers
 	cleaned = re.sub("[^0-9]", "", phonenumber)
 	if len(cleaned) == 10:
-		yield cleaned
-	elif len(cleaned) <= 10:
-		# this would be invalid
+		cleaned = cleaned + '+1'
+		return cleaned
 	else:
-		#also an invalid number
+		# generic response if the number is not valid
+		return "-1"
 
