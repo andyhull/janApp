@@ -29,7 +29,7 @@ def index():
     cur = Numbers.query.all()
     app.logger.debug('All numbers: %s' % (cur))
 
-    return render_template('show_entries.html', entries=none)
+    return render_template('show_entries.html')
 
 # use this for website number entry
 @app.route('/add', methods=['POST'])
