@@ -1,13 +1,18 @@
 import os
 import twilio.twiml
+from util import cleanphone
 from database import engine, db_session, init_db
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from models import Numbers
 from twilio.rest import TwilioRestClient
 # from config import account_sid, auth_token, twilio_number
+DEBUG = True
+SECRET_KEY = 'development key'
 
 app = Flask(__name__)
+app.config.from_object(__name__)
+app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 #DB replacement for testing Twilio
 loner = None
@@ -22,12 +27,46 @@ def shutdown_session(exception=None):
 def index():
     cur = db_session.execute('select phone, buddy from numbers order by id desc')
     cur = Numbers.query.all()
+    app.logger.debug('All numbers: %s' % (cur))
 
-    return render_template('show_entries.html', entries=cur)
+    return render_template('show_entries.html', entries=none)
 
+# use this for website number entry
 @app.route('/add', methods=['POST'])
 def add_entry():
-    newPhone = request.form['phone']
+    # clean the entered phone number
+    newPhone = cleanphone(request.form['phone'])
+    # did we get a valid number?????
+    if newPhone != '-1':
+        db_session.add(Numbers(newPhone))
+        db_session.commit()
+        # Find the numbers that do not have a buddy
+        newBud = db_session.query(Numbers).filter(Numbers.buddy==None, Numbers.phone != newPhone).first()
+        if newBud:
+            # Add the buddy number to the newly added phone number
+            db_session.query(Numbers).filter(Numbers.phone==newPhone).update({Numbers.buddy: newBud.phone})
+            # Add the number to the buddy list 
+            db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
+            db_session.commit()
+            body = "Thanks for signing up! You've been matched with a buddy. Start sharing!"
+            send_sms(newPhone, body)
+            send_sms(newBud.phone, body)
+            return redirect(url_for('index'))
+        else:
+            body = "Thanks for signing up! We're still waiting to match you. Sorry about that!"
+            send_sms(newPhone, body)
+            return redirect(url_for('index'))
+
+    else:
+        flash('Sorry that is not a valid number')
+        return redirect(url_for('index'))
+
+# use this function for sms/text entry
+def add_entry_text(newNumber):
+    if newNumber:
+        newPhone = newNumber
+    else:
+        newPhone = cleanphone(request.form['phone'])
     db_session.add(Numbers(newPhone))
     db_session.commit()
     # Find the numbers that do not have a buddy
@@ -38,10 +77,12 @@ def add_entry():
         # Add the number to the buddy list 
         db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
         db_session.commit()
-
-    flash('New entry was successfully posted')
-    return redirect(url_for('index'))
-
+        body = "Thanks for signing up! You've been matched with a buddy. Start sharing!"
+        send_sms(newPhone, body)
+        send_sms(newBud.phone, body)
+    else:
+        body = "Thanks for signing up! We're still waiting to match you. Sorry about that!"
+        send_sms(newPhone, body)
 
 @app.route('/receiver', methods=['GET', 'POST'])
 def receiver():
@@ -50,39 +91,35 @@ def receiver():
     app.logger.debug('From: %s, Body: %s' % (from_number, body))
 
     #initiate new number
-    if from_number not in numbers:
+    #replace this with a check from the database
+    existingNumbers = db_session.query(Numbers).filter(Numbers.phone==from_number).first()
+    if not existingNumbers:
         initiate_number(from_number)
-        return 'Text me: 415.539.3977'
+        return 'Text me: 415.697.3084'
 
     partner = get_partner(from_number)
+    #here we can match to the DB
     if partner:
         send_sms(partner, body)
     else:
-        send_sms(from_number, "We're still waiting to match you. Sorry about that!")
+        send_sms(from_number, "Thanks for signing up! We're still waiting to match you. Sorry about that!")
     app.logger.debug('From: %s \nPartner: %s \nloner: %s \n convos: %s' % (from_number, partner, loner, convos))
     return 'Text me: 510-213-6505'
 
 def initiate_number(number):
-    global loner
-    numbers.append(number)
-    if not loner:
-        loner = number
-        send_sms(number, "There aren't any people to match you with quite yet.")
-    else:
-        convos[number] = loner
-        convos[loner] = number
-        body = "You've been matched. Feel free to share your experience."
-        send_sms(number, body)
-        send_sms(loner, body)
-        loner = None
+    # if this is from a text add the number to the database
+    startingNumber = add_entry_text(number)
 
 def get_partner(number):
-    if number in convos:
-        return convos[number]
-    return None
+    numberBuddy = db_session.query(Numbers).filter(Numbers.phone==number).first()
+    if numberBuddy:
+        return numberBuddy.buddy
+    else:
+        return None
 
 def send_sms(number, body):
-    client = TwilioRestClient(os.env[ACCOUNT_SID], os.env[AUTH_TOKEN])
+    twilio_number = '+14156973084'
+    client = TwilioRestClient(os.environ['ACCOUNT_SID'], os.environ['AUTH_TOKEN'])
     message = client.sms.messages.create(to=number, from_=twilio_number,
                                      body=body)
 
