@@ -27,8 +27,9 @@ def shutdown_session(exception=None):
 def index():
     cur = db_session.execute('select phone, buddy from numbers order by id desc')
     cur = Numbers.query.all()
+    app.logger.debug('All numbers: %s' % (cur))
 
-    return render_template('show_entries.html', entries=cur)
+    return render_template('show_entries.html', entries=none)
 
 # use this for website number entry
 @app.route('/add', methods=['POST'])
@@ -48,9 +49,15 @@ def add_entry():
             # Add the number to the buddy list 
             db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
             db_session.commit()
+            body = "Thanks for signing up! You've been matched with a buddy. Start sharing!"
+            send_sms(newPhone, body)
+            send_sms(newBud.phone, body)
+            return redirect(url_for('index'))
+        else:
+            body = "Thanks for signing up! We're still waiting to match you. Sorry about that!"
+            send_sms(newPhone, body)
+            return redirect(url_for('index'))
 
-        flash('New entry was successfully posted')
-        return redirect(url_for('index'))
     else:
         flash('Sorry that is not a valid number')
         return redirect(url_for('index'))
@@ -71,7 +78,13 @@ def add_entry_text(newNumber):
         # Add the number to the buddy list 
         db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
         db_session.commit()
-    return newPhone, newBud
+        body = "Thanks for signing up! You've been matched with a buddy. Start sharing!"
+        send_sms(newPhone, body)
+        send_sms(newBud.phone, body)
+    else:
+        body = "Thanks for signing up! We're still waiting to match you. Sorry about that!"
+        send_sms(newPhone, body)
+    # return newPhone, newBud
 
 
 @app.route('/receiver', methods=['GET', 'POST'])
@@ -102,13 +115,15 @@ def receiver():
 def initiate_number(number):
     # if this is from a text add the number to the database
     startingNumber = add_entry_text(number)
-    if db_session.query(Numbers).filter(Numbers.phone==number, Numbers.buddy==None):
-        send_sms(number, "There aren't any people to match you with quite yet.")
-    else:
-        body = "You've been matched. Feel free to share your experience."
-        print(startingNumber)
-        send_sms(startingNumber[0], body)
-        send_sms(startingNumber[1], body)
+    # if db_session.query(Numbers).filter(Numbers.phone==number, Numbers.buddy==None):
+    #     # send_sms(number, "There aren't any people to match you with quite yet.")
+    #     send_sms(number, "There aren't any people to match you with quite yet.")
+    # else:
+    #     body = "You've been matched. Feel free to share your experience."
+    #     print(startingNumber)
+    #     app.logger.debug('From: %s \nPartner: %s' % (startingNumber[0], startingNumber[1]))
+    #     send_sms(startingNumber[0], body)
+    #     send_sms(startingNumber[1], body)
     # global loner
     # numbers.append(number)
     # if not loner:
