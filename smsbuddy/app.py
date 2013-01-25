@@ -6,18 +6,13 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 from flask_sqlalchemy import SQLAlchemy
 from models import Numbers
 from twilio.rest import TwilioRestClient
-# from config import account_sid, auth_token, twilio_number
+
 DEBUG = True
 SECRET_KEY = 'development key'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-
-#DB replacement for testing Twilio
-loner = None
-numbers = []
-convos = {}
 
 @app.teardown_request
 def shutdown_session(exception=None):
@@ -53,7 +48,7 @@ def add_entry():
             send_sms(newBud.phone, body)
             return redirect(url_for('index'))
         else:
-            body = "Thanks for signing up! We're still waiting to match you. Sorry about that!"
+            body = "Thanks for signing up! We're still waiting to match you. We'll contact you when we get a match, usually in a day or two."
             send_sms(newPhone, body)
             return redirect(url_for('index'))
 
@@ -81,7 +76,7 @@ def add_entry_text(newNumber):
         send_sms(newPhone, body)
         send_sms(newBud.phone, body)
     else:
-        body = "Thanks for signing up! We're still waiting to match you. Sorry about that!"
+        body = "Thanks for signing up! We're still waiting to match you. We'll contact you when we get a match, usually in a day or two."
         send_sms(newPhone, body)
 
 @app.route('/receiver', methods=['GET', 'POST'])
@@ -102,8 +97,7 @@ def receiver():
     if partner:
         send_sms(partner, body)
     else:
-        send_sms(from_number, "Thanks for signing up! We're still waiting to match you. Sorry about that!")
-    app.logger.debug('From: %s \nPartner: %s \nloner: %s \n convos: %s' % (from_number, partner, loner, convos))
+        send_sms(from_number, "Thanks for signing up! We're still waiting to match you. We'll contact you when we get a match, usually in a day or two.")
     return 'Text me: 510-213-6505'
 
 def initiate_number(number):
