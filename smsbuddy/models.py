@@ -12,4 +12,4 @@ class Numbers(Base):
         self.buddy = buddy
 
     def __repr__(self):
-        return '<Phone %r> buddy %r' % (self.phone, self.buddy)
+        return 'Phone: %r Buddy: %r' % (self.phone, self.buddy)
