@@ -2,15 +2,14 @@
 {% block body %}
   <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
     <dl>
-      <dt>Enter Your Phone Number:
+      <dt>Enter your phone number:
       <dd><input type=text size=30 name=phone>
     </dl>
+    <p>You will be automatically matched with a buddy. When you get your match, text them how you are feeling or to get advice. Keep it clean, don't be that person. </p>
   </form>
   <ul class=entries>
   {% for entry in entries %}
     <li><strong>Phone #:&nbsp;</strong>{{ entry.phone }}&nbsp;<strong>Buddy:&nbsp;</strong>{{ entry.buddy }}
-  {% else %}
-    <li><em>Unbelievable. No entries here so far</em>
   {% endfor %}
   </ul>
 {% endblock %}
