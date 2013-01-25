@@ -48,7 +48,7 @@ def add_entry():
             # Add the number to the buddy list 
             db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
             db_session.commit()
-            body = "Thanks for signing up! You've been matched with a buddy. Start sharing!"
+            body = "Thanks for signing up! You've been matched with a buddy. You can text this number to start sharing!"
             send_sms(newPhone, body)
             send_sms(newBud.phone, body)
             return redirect(url_for('index'))
@@ -77,7 +77,7 @@ def add_entry_text(newNumber):
         # Add the number to the buddy list 
         db_session.query(Numbers).filter(Numbers.phone==newBud.phone).update({Numbers.buddy: newPhone})
         db_session.commit()
-        body = "Thanks for signing up! You've been matched with a buddy. Start sharing!"
+        body = "Thanks for signing up! You've been matched with a buddy. You can text 415.697.3084 to start sharing!"
         send_sms(newPhone, body)
         send_sms(newBud.phone, body)
     else:
