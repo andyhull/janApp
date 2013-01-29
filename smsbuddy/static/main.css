@@ -1,25 +1,67 @@
-.container {
-  max-width: 750px;
-  padding: 5px;
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600);
+.positions {
+  width: 750px;
+  padding: 0;
   margin: 0 auto;
-  display: block;
 }
-.topnav {
+body {
   margin: 0;
   padding: 0;
-  border-color: red;
-  border-width: 1px;
 }
+/**
+ * Top nav bar
+ **/
 .topbar {
-  padding: 5px 0 0 10px;
+  padding: 5px 0;
+  margin: 0 0 10px 0;
+  background-color: #ff5776;
+}
+.topnav {
+  width: 750px;
+  padding: 0;
+  margin: 0 auto;
+}
+.topnav li {
+  padding: 5px 15px 10px 5px;
+  display: inline;
+  list-style-type: none;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+  color: #ffffff;
 }
 .join {
   height: 200px;
-  width: 500px;
+  width: 750px;
+  padding: 0;
+  margin: 0 auto;
 }
-.copyblock {
-  max-width: 50%;
+.join input[type=text] {
+  height: 30px;
+  width: 200px;
+}
+.join input[type=submit] {
+  height: 30px;
+  width: 50px;
 }
 .content {
+  width: 750px;
+  padding: 0;
+  margin: 0 auto;
+  display: block;
+  clear: both;
   background: #99e1ff;
+}
+.copyblock {
+  display: block;
+  max-width: 40%;
+}
+#about {
+  float: left;
+  display: block;
+  max-width: 40%;
+}
+#why-join {
+  float: right;
+  display: block;
+  max-width: 40%;
 }

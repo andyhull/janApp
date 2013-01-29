@@ -6,68 +6,86 @@
 @white: #FFFFFF;
 @yellow: #FFFF95;
 
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600);
 
+.positions {
+	width: @sitewidth;
+	padding: 0;
+	margin: 0 auto;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+}
+
+/**
+ * Top nav bar
+ **/
+ 
 .topbar {
-	padding: 5px 0 0 10px;
+	padding: 5px 0;
+	margin: 0 0 10px 0;
+	background-color: @red;
  }
 
 .topnav {
-	max-width: @sitewidth;
- 	padding: 0;
- 	margin: 0;
- 	border-color: red;
- 	border-width: 1px;
+	.positions;
 
+	li {
+		padding: 5px 15px 10px 5px;
+		display: inline;
+		list-style-type: none;
 
- 	ul { //styling
- 		li { //styling
+		font-family: 'Source Sans Pro', sans-serif;
+		font-weight: 600;
+		color: @white;
+	}
 
- 		}
- 	}
+	.site-logo {}
 
  }
 
-.content {
- 	max-width: @sitewidth;
- 	margin: 0;
- 	padding: 0;
- 	display: inline;
- }
 
+
+.menubar {}
+
+// Join splash
 .join {
  	//layout and size
  	height: 200px;
- 	width: 500px;
+ 	.positions;
 
  	//parts
  	input[type=text] {
- 		height: 20px;
+ 		height: 30px;
+ 		width: 200px;
+ 	};
+ 	input[type=submit] {
+ 		height: 30px;
  		width: 50px;
  	};
- 	input[type=submit] {};
  }
 
-
+ // Content
+.content {
+	.positions;
+ 	display: block;
+ 	clear: both;
+ 	background: lighten(@blueneon, 30%);
+ }
 
 .copyblock {
-	display: inline;
+	display: block;
  	max-width: percentage(0.4);
 }
 
 #about {
 	float: left;
-	.copyblock
+	.copyblock;
 }
 #why-join {
 	float: right;
-	.copyblock
+	.copyblock;
 }
 
-
-.content {
-	background: lighten(@blueneon, 30%);
-}
-
-.site-logo {}
-
-.menubar {}
